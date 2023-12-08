@@ -8,6 +8,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import 'package:thunder/community/widgets/post_card_view_comfortable.dart';
 import 'package:thunder/community/widgets/post_card_view_compact.dart';
+import 'package:thunder/community/widgets/post_card_view_grid.dart';
 import 'package:thunder/core/enums/local_settings.dart';
 import 'package:thunder/core/models/post_view_media.dart';
 import 'package:thunder/core/singletons/preferences.dart';
@@ -15,7 +16,9 @@ import 'package:thunder/feed/utils/post.dart';
 import 'package:thunder/settings/widgets/list_option.dart';
 import 'package:thunder/settings/widgets/toggle_option.dart';
 import 'package:thunder/thunder/bloc/thunder_bloc.dart';
+import 'package:thunder/thunder/enums/feed_card_type_enum.dart';
 import 'package:thunder/utils/bottom_sheet_list_picker.dart';
+import 'package:thunder/utils/constants.dart';
 
 class PostAppearanceSettingsPage extends StatefulWidget {
   const PostAppearanceSettingsPage({super.key});
@@ -73,13 +76,17 @@ class _PostAppearanceSettingsPageState extends State<PostAppearanceSettingsPage>
   /// Controller to manage expandable state for comment preview
   ExpandableController expandableController = ExpandableController();
 
+  /// Default Feed card type for posts on the feed (compact, card, grid)
+  FeedCardType feedCardType = DEFAULT_FEED_CARD_TYPE;
+
   /// Initialize the settings from the user's shared preferences
   Future<void> initPreferences() async {
     final prefs = (await UserPreferences.instance).sharedPreferences;
 
     setState(() {
       // General Settings
-      useCompactView = prefs.getBool(LocalSettings.useCompactView.name) ?? false;
+      feedCardType = FeedCardType.values.byName(prefs.getString(LocalSettings.feedCardType.name) ?? DEFAULT_FEED_CARD_TYPE.name);
+
       hideNsfwPreviews = prefs.getBool(LocalSettings.hideNsfwPreviews.name) ?? true;
       showPostAuthor = prefs.getBool(LocalSettings.showPostAuthor.name) ?? false;
       useDisplayNames = prefs.getBool(LocalSettings.useDisplayNamesForUsers.name) ?? true;
@@ -106,9 +113,14 @@ class _PostAppearanceSettingsPageState extends State<PostAppearanceSettingsPage>
     final prefs = (await UserPreferences.instance).sharedPreferences;
 
     switch (attribute) {
-      case LocalSettings.useCompactView:
-        await prefs.setBool(LocalSettings.useCompactView.name, value);
-        setState(() => useCompactView = value);
+      case LocalSettings.feedCardType:
+        await prefs.setString(LocalSettings.feedCardType.name, value);
+        await prefs.setBool(LocalSettings.feedCardType.name, value == FeedCardType.compact);
+        setState(() {
+          feedCardType = FeedCardType.values.byName(value ?? DEFAULT_FEED_CARD_TYPE.name);
+          useCompactView = value == FeedCardType.compact;
+        });
+
         break;
       case LocalSettings.hideNsfwPreviews:
         await prefs.setBool(LocalSettings.hideNsfwPreviews.name, value);
@@ -177,8 +189,8 @@ class _PostAppearanceSettingsPageState extends State<PostAppearanceSettingsPage>
   /// Reset the posts preferences to their defaults
   void resetPostPreferences() async {
     final prefs = (await UserPreferences.instance).sharedPreferences;
-
     await prefs.remove(LocalSettings.useCompactView.name);
+    await prefs.remove(LocalSettings.feedCardType.name);
     await prefs.remove(LocalSettings.hideNsfwPreviews.name);
     await prefs.remove(LocalSettings.showPostAuthor.name);
     await prefs.remove(LocalSettings.useDisplayNamesForUsers.name);
@@ -344,43 +356,93 @@ class _PostAppearanceSettingsPageState extends State<PostAppearanceSettingsPage>
                           itemBuilder: (context, index) {
                             return Column(
                               children: [
-                                (useCompactView)
-                                    ? IgnorePointer(
-                                        child: PostCardViewCompact(
-                                          postViewMedia: snapshot.data![index]!,
-                                          showThumbnailPreviewOnRight: showThumbnailPreviewOnRight,
-                                          showTextPostIndicator: showTextPostIndicator,
-                                          showPostAuthor: showPostAuthor,
-                                          hideNsfwPreviews: hideNsfwPreviews,
-                                          communityMode: false,
-                                          markPostReadOnMediaView: false,
-                                          isUserLoggedIn: true,
-                                          listingType: ListingType.all,
-                                          indicateRead: dimReadPosts,
-                                        ),
-                                      )
-                                    : IgnorePointer(
-                                        child: PostCardViewComfortable(
-                                          postViewMedia: snapshot.data![index]!,
-                                          showThumbnailPreviewOnRight: showThumbnailPreviewOnRight,
-                                          showPostAuthor: showPostAuthor,
-                                          hideNsfwPreviews: hideNsfwPreviews,
-                                          communityMode: false,
-                                          markPostReadOnMediaView: false,
-                                          isUserLoggedIn: true,
-                                          listingType: ListingType.all,
-                                          indicateRead: dimReadPosts,
-                                          edgeToEdgeImages: showEdgeToEdgeImages,
-                                          showTitleFirst: showTitleFirst,
-                                          showFullHeightImages: showFullHeightImages,
-                                          showVoteActions: showVoteActions,
-                                          showSaveAction: showSaveAction,
-                                          showCommunityIcons: showCommunityIcons,
-                                          showTextContent: showTextContent,
-                                          onVoteAction: (voteType) {},
-                                          onSaveAction: (saved) {},
-                                        ),
+                                switch (feedCardType) {
+                                  FeedCardType.card => IgnorePointer(
+                                      child: PostCardViewComfortable(
+                                        postViewMedia: snapshot.data![index]!,
+                                        showThumbnailPreviewOnRight: showThumbnailPreviewOnRight,
+                                        showPostAuthor: showPostAuthor,
+                                        hideNsfwPreviews: hideNsfwPreviews,
+                                        communityMode: false,
+                                        markPostReadOnMediaView: false,
+                                        isUserLoggedIn: true,
+                                        listingType: ListingType.all,
+                                        indicateRead: dimReadPosts,
+                                        edgeToEdgeImages: showEdgeToEdgeImages,
+                                        showTitleFirst: showTitleFirst,
+                                        showFullHeightImages: showFullHeightImages,
+                                        showVoteActions: showVoteActions,
+                                        showSaveAction: showSaveAction,
+                                        showCommunityIcons: showCommunityIcons,
+                                        showTextContent: showTextContent,
+                                        onVoteAction: (voteType) {},
+                                        onSaveAction: (saved) {},
                                       ),
+                                    ),
+                                  FeedCardType.compact => IgnorePointer(
+                                      child: PostCardViewCompact(
+                                        postViewMedia: snapshot.data![index]!,
+                                        showThumbnailPreviewOnRight: showThumbnailPreviewOnRight,
+                                        showTextPostIndicator: showTextPostIndicator,
+                                        showPostAuthor: showPostAuthor,
+                                        hideNsfwPreviews: hideNsfwPreviews,
+                                        communityMode: false,
+                                        markPostReadOnMediaView: false,
+                                        isUserLoggedIn: true,
+                                        listingType: ListingType.all,
+                                        indicateRead: dimReadPosts,
+                                      ),
+                                    ),
+                                  FeedCardType.grid => IgnorePointer(
+                                      child: PostCardViewGrid(
+                                        postViewMedia: snapshot.data![index]!,
+                                        hideNsfwPreviews: hideNsfwPreviews,
+                                        showFullHeightImages: true,
+                                        edgeToEdgeImages: true,
+                                        markPostReadOnMediaView: false,
+                                        isUserLoggedIn: true,
+                                        indicateRead: dimReadPosts,
+                                      ),
+                                    )
+                                },
+                                // (useCompactView)
+                                //     ? IgnorePointer(
+                                //         child: PostCardViewCompact(
+                                //           postViewMedia: snapshot.data![index]!,
+                                //           showThumbnailPreviewOnRight: showThumbnailPreviewOnRight,
+                                //           showTextPostIndicator: showTextPostIndicator,
+                                //           showPostAuthor: showPostAuthor,
+                                //           hideNsfwPreviews: hideNsfwPreviews,
+                                //           communityMode: false,
+                                //           markPostReadOnMediaView: false,
+                                //           isUserLoggedIn: true,
+                                //           listingType: ListingType.all,
+                                //           indicateRead: dimReadPosts,
+                                //         ),
+                                //       )
+                                //     : IgnorePointer(
+                                //         child: PostCardViewComfortable(
+                                //           postViewMedia: snapshot.data![index]!,
+                                //           showThumbnailPreviewOnRight: showThumbnailPreviewOnRight,
+                                //           showPostAuthor: showPostAuthor,
+                                //           hideNsfwPreviews: hideNsfwPreviews,
+                                //           communityMode: false,
+                                //           markPostReadOnMediaView: false,
+                                //           isUserLoggedIn: true,
+                                //           listingType: ListingType.all,
+                                //           indicateRead: dimReadPosts,
+                                //           edgeToEdgeImages: showEdgeToEdgeImages,
+                                //           showTitleFirst: showTitleFirst,
+                                //           showFullHeightImages: showFullHeightImages,
+                                //           showVoteActions: showVoteActions,
+                                //           showSaveAction: showSaveAction,
+                                //           showCommunityIcons: showCommunityIcons,
+                                //           showTextContent: showTextContent,
+                                //           onVoteAction: (voteType) {},
+                                //           onSaveAction: (saved) {},
+                                //         ),
+                                //       ),
+
                                 const Divider(),
                               ],
                             );
@@ -406,13 +468,14 @@ class _PostAppearanceSettingsPageState extends State<PostAppearanceSettingsPage>
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: ListOption(
                 description: l10n.postViewType,
-                value: ListPickerItem(label: useCompactView ? l10n.compactView : l10n.cardView, icon: Icons.crop_16_9_rounded, payload: useCompactView),
+                value: ListPickerItem(label: feedCardType.value, icon: Icons.crop_16_9_rounded, payload: useCompactView),
                 options: [
-                  ListPickerItem(icon: Icons.crop_16_9_rounded, label: l10n.compactView, payload: true),
-                  ListPickerItem(icon: Icons.crop_din_rounded, label: l10n.cardView, payload: false),
+                  ListPickerItem(icon: Icons.crop_16_9_rounded, label: l10n.compactView, payload: FeedCardType.compact),
+                  ListPickerItem(icon: Icons.crop_din_rounded, label: l10n.cardView, payload: FeedCardType.card),
+                  ListPickerItem(icon: Icons.dashboard_outlined, label: l10n.gridView, payload: FeedCardType.grid),
                 ],
                 icon: Icons.view_list_rounded,
-                onChanged: (value) => setPreferences(LocalSettings.useCompactView, value.payload),
+                onChanged: (value) => setPreferences(LocalSettings.feedCardType, value.payload),
               ),
             ),
           ),

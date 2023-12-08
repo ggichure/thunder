@@ -1,5 +1,6 @@
 import 'package:lemmy_api_client/v3.dart';
 import 'package:thunder/core/enums/nested_comment_indicator.dart';
+import 'package:thunder/thunder/enums/feed_card_type_enum.dart';
 
 const ListingType DEFAULT_LISTING_TYPE = ListingType.all;
 
@@ -19,3 +20,5 @@ const NestedCommentIndicatorColor DEFAULT_NESTED_COMMENT_INDICATOR_COLOR = Neste
 const int ANDROID_INTENT_FLAG_ACTIVITY_NEW_TASK = 268435456;
 
 const String ANDROID_INTENT_ACTION_VIEW = "android.intent.action.VIEW";
+
+const FeedCardType DEFAULT_FEED_CARD_TYPE = FeedCardType.card;

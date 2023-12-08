@@ -18,6 +18,7 @@ import 'package:thunder/core/models/version.dart';
 import 'package:thunder/core/singletons/lemmy_client.dart';
 import 'package:thunder/core/singletons/preferences.dart';
 import 'package:thunder/core/update/check_github_update.dart';
+import 'package:thunder/thunder/enums/feed_card_type_enum.dart';
 import 'package:thunder/utils/constants.dart';
 
 part 'thunder_event.dart';

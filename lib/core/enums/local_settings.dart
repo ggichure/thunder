@@ -22,6 +22,8 @@ enum LocalSettings {
   appLanguageCode(name: 'setting_app_language_code', label: 'App Language'),
 
   /// -------------------------- Feed Post Related Settings --------------------------
+  // Feed Card related
+  feedCardType(name: 'settings_general_feed_card_type', label: 'Feed Card Type'),
   // Compact Related Settings
   useCompactView(name: 'setting_general_use_compact_view', label: 'Compact List View'),
   showPostTitleFirst(name: 'setting_general_show_title_first', label: 'Show Title First'),

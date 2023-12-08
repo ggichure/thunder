@@ -14,7 +14,8 @@ class ThunderState extends Equatable {
     // Default Listing/Sort Settings
     this.defaultListingType = DEFAULT_LISTING_TYPE,
     this.defaultSortType = DEFAULT_SORT_TYPE,
-
+    // Feed card type
+    this.feedCardType = FeedCardType.card,
     // NSFW Settings
     this.hideNsfwPosts = false,
     this.hideNsfwPreviews = true,
@@ -136,6 +137,8 @@ class ThunderState extends Equatable {
   final ListingType defaultListingType;
   final SortType defaultSortType;
 
+  // Feed card type
+  final FeedCardType? feedCardType;
   // NSFW Settings
   final bool hideNsfwPosts;
   final bool hideNsfwPreviews;
@@ -265,7 +268,8 @@ class ThunderState extends Equatable {
     // Default Listing/Sort Settings
     ListingType? defaultListingType,
     SortType? defaultSortType,
-
+    // Feed card type
+    FeedCardType? feedCardType,
     // NSFW Settings
     bool? hideNsfwPosts,
     bool? hideNsfwPreviews,
@@ -385,7 +389,8 @@ class ThunderState extends Equatable {
       /// Default Listing/Sort Settings
       defaultListingType: defaultListingType ?? this.defaultListingType,
       defaultSortType: defaultSortType ?? this.defaultSortType,
-
+      //Feed card type
+      feedCardType: feedCardType ?? this.feedCardType,
       // NSFW Settings
       hideNsfwPosts: hideNsfwPosts ?? this.hideNsfwPosts,
       hideNsfwPreviews: hideNsfwPreviews ?? this.hideNsfwPreviews,
@@ -515,7 +520,8 @@ class ThunderState extends Equatable {
         /// Default Listing/Sort Settings
         defaultListingType,
         defaultSortType,
-
+        // feed card type
+        feedCardType,
         // NSFW Settings
         hideNsfwPosts,
         hideNsfwPreviews,

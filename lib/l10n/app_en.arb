@@ -859,5 +859,9 @@
     "description": "The total score of post or comment"
   },
   "xUpvotes": "{x} upvotes",
-  "@xUpvotes": {}
+  "@xUpvotes": {},
+  "gridView": "Grid View",
+  "@gridView": {
+    "description": "Label for the Grid View view option in Setting -> Appearance -> Posts"
+  }
 }
