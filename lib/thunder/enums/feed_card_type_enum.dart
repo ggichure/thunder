@@ -5,11 +5,9 @@ enum FeedCardType {
 
   final String value;
   const FeedCardType(this.value);
-  factory FeedCardType.fromJson(dynamic value) {
-    return value is int ? values[value] : values.firstWhere((e) => e.value == value);
-  }
+  factory FeedCardType.fromJson(String value) => values.firstWhere((e) => e.value == value);
 
   String toJson() => value;
-
+  @override
   String toString() => value;
 }

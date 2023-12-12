@@ -7,9 +7,11 @@ import 'package:thunder/feed/bloc/feed_bloc.dart';
 import 'package:thunder/feed/view/feed_page.dart';
 import 'package:thunder/post/enums/post_action.dart';
 import 'package:thunder/thunder/bloc/thunder_bloc.dart';
+import 'package:thunder/thunder/enums/feed_card_type_enum.dart';
 
 class FeedPostList extends StatelessWidget {
   final bool tabletMode;
+  final FeedCardType? feedCardType;
   final List<int>? queuedForRemoval;
   final List<PostViewMedia> postViewMedias;
 
@@ -17,8 +19,20 @@ class FeedPostList extends StatelessWidget {
     super.key,
     required this.postViewMedias,
     required this.tabletMode,
+    required this.feedCardType,
     this.queuedForRemoval,
   });
+  int _getCrossAxisCount() {
+    switch (feedCardType!) {
+      case FeedCardType.card:
+        return 1;
+      case FeedCardType.compact:
+        return 1;
+      case FeedCardType.grid:
+        // Handle different screen sizes
+        return 2;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -27,8 +41,8 @@ class FeedPostList extends StatelessWidget {
 
     // Widget representing the list of posts on the feed
     return SliverMasonryGrid.count(
-      crossAxisCount: tabletMode ? 2 : 1,
-      crossAxisSpacing: 40,
+      crossAxisCount: _getCrossAxisCount(),
+      crossAxisSpacing: 8,
       mainAxisSpacing: 0,
       itemBuilder: (BuildContext context, int index) {
         return AnimatedSwitcher(

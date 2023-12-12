@@ -26,6 +26,7 @@ import 'package:thunder/shared/common_markdown_body.dart';
 import 'package:thunder/shared/snackbar.dart';
 import 'package:thunder/shared/text/scalable_text.dart';
 import 'package:thunder/thunder/bloc/thunder_bloc.dart';
+import 'package:thunder/thunder/enums/feed_card_type_enum.dart';
 import 'package:thunder/user/bloc/user_bloc.dart';
 import 'package:thunder/utils/cache.dart';
 
@@ -220,6 +221,7 @@ class _FeedViewState extends State<FeedView> {
   Widget build(BuildContext context) {
     ThunderBloc thunderBloc = context.watch<ThunderBloc>();
     bool tabletMode = thunderBloc.state.tabletMode;
+    FeedCardType? feedCardType = thunderBloc.state.feedCardType;
     final AppLocalizations l10n = AppLocalizations.of(context)!;
 
     return MultiBlocListener(
@@ -322,6 +324,7 @@ class _FeedViewState extends State<FeedView> {
                             FeedPostList(
                               postViewMedias: postViewMedias,
                               tabletMode: tabletMode,
+                              feedCardType: feedCardType,
                               queuedForRemoval: queuedForRemoval,
                             ),
                             // Widgets to display on the feed when feedType == FeedType.community

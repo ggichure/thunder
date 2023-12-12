@@ -88,13 +88,6 @@ class ThunderBloc extends Bloc<ThunderEvent, ThunderState> {
       // Default Listing/Sort Settings
       ListingType defaultListingType = DEFAULT_LISTING_TYPE;
       SortType defaultSortType = DEFAULT_SORT_TYPE;
-      try {
-        defaultListingType = ListingType.values.byName(prefs.getString(LocalSettings.defaultFeedListingType.name) ?? DEFAULT_LISTING_TYPE.name);
-        defaultSortType = SortType.values.byName(prefs.getString(LocalSettings.defaultFeedSortType.name) ?? DEFAULT_SORT_TYPE.name);
-      } catch (e) {
-        defaultListingType = ListingType.values.byName(DEFAULT_LISTING_TYPE.name);
-        defaultSortType = SortType.values.byName(DEFAULT_SORT_TYPE.name);
-      }
 
       // NSFW Settings
       bool hideNsfwPosts = prefs.getBool(LocalSettings.hideNsfwPosts.name) ?? false;
@@ -114,6 +107,7 @@ class ThunderBloc extends Bloc<ThunderEvent, ThunderState> {
 
       /// -------------------------- Feed Post Related Settings --------------------------
       // Compact Related Settings
+      FeedCardType feedCardType = DEFAULT_FEED_CARD_TYPE;
       bool useCompactView = prefs.getBool(LocalSettings.useCompactView.name) ?? false;
       bool showTitleFirst = prefs.getBool(LocalSettings.showPostTitleFirst.name) ?? false;
       bool showThumbnailPreviewOnRight = prefs.getBool(LocalSettings.showThumbnailPreviewOnRight.name) ?? false;
@@ -209,6 +203,16 @@ class ThunderBloc extends Bloc<ThunderEvent, ThunderState> {
           // If the user already has some accouts (i.e., an upgrade), we don't want to just throw an anonymous instance at them
           ((await Account.accounts()).isNotEmpty ? [] : ['lemmy.ml']);
       String currentAnonymousInstance = prefs.getString(LocalSettings.currentAnonymousInstance.name) ?? 'lemmy.ml';
+      try {
+        defaultListingType = ListingType.values.byName(prefs.getString(LocalSettings.defaultFeedListingType.name) ?? DEFAULT_LISTING_TYPE.name);
+        defaultSortType = SortType.values.byName(prefs.getString(LocalSettings.defaultFeedSortType.name) ?? DEFAULT_SORT_TYPE.name);
+
+        feedCardType = FeedCardType.values.byName(prefs.getString(LocalSettings.feedCardType.name) ?? DEFAULT_FEED_CARD_TYPE.name);
+      } catch (e) {
+        defaultListingType = ListingType.values.byName(DEFAULT_LISTING_TYPE.name);
+        defaultSortType = SortType.values.byName(DEFAULT_SORT_TYPE.name);
+        feedCardType = DEFAULT_FEED_CARD_TYPE;
+      }
 
       return emit(state.copyWith(
         status: ThunderStatus.success,
@@ -236,6 +240,7 @@ class ThunderBloc extends Bloc<ThunderEvent, ThunderState> {
 
         /// -------------------------- Feed Post Related Settings --------------------------
         // Compact Related Settings
+        feedCardType: feedCardType,
         useCompactView: useCompactView,
         showTitleFirst: showTitleFirst,
         showThumbnailPreviewOnRight: showThumbnailPreviewOnRight,

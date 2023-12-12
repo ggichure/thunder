@@ -35,6 +35,7 @@ import 'package:thunder/shared/sort_picker.dart';
 import 'package:thunder/shared/community_icon.dart';
 import 'package:thunder/shared/user_avatar.dart';
 import 'package:thunder/thunder/bloc/thunder_bloc.dart';
+import 'package:thunder/thunder/enums/feed_card_type_enum.dart';
 import 'package:thunder/utils/bottom_sheet_list_picker.dart';
 import 'package:thunder/utils/constants.dart';
 import 'package:thunder/utils/debounce.dart';
@@ -497,6 +498,7 @@ class _SearchPageState extends State<SearchPage> with AutomaticKeepAliveClientMi
     final AppLocalizations l10n = AppLocalizations.of(context)!;
     final ThunderBloc thunderBloc = context.watch<ThunderBloc>();
     final bool tabletMode = thunderBloc.state.tabletMode;
+    final FeedCardType? feedCardType = thunderBloc.state.feedCardType;
 
     switch (state.status) {
       case SearchStatus.initial:
@@ -662,7 +664,11 @@ class _SearchPageState extends State<SearchPage> with AutomaticKeepAliveClientMi
             child: CustomScrollView(
               controller: _scrollController,
               slivers: [
-                FeedPostList(postViewMedias: state.posts ?? [], tabletMode: tabletMode),
+                FeedPostList(
+                  postViewMedias: state.posts ?? [],
+                  tabletMode: tabletMode,
+                  feedCardType: feedCardType,
+                ),
                 if (state.status == SearchStatus.refreshing)
                   const SliverToBoxAdapter(
                     child: Center(

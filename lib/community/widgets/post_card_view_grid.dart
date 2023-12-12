@@ -36,12 +36,16 @@ class PostCardViewGrid extends StatelessWidget {
     final bool darkTheme = context.read<ThemeBloc>().state.useDarkTheme;
 
     return Container(
-      child: (postViewMedia.media.isEmpty)
-          ? Container(
-              color: indicateRead && postViewMedia.postView.read ? theme.colorScheme.onBackground.withOpacity(darkTheme ? 0.05 : 0.075) : null,
-              padding: const EdgeInsets.only(
-                bottom: 8.0,
-                top: 6,
+      margin: const EdgeInsets.only(top: 4),
+      padding: const EdgeInsets.all(1),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(16),
+        color: indicateRead && postViewMedia.postView.read ? theme.colorScheme.onBackground.withOpacity(darkTheme ? 0.05 : 0.075) : null,
+      ),
+      child: (postViewMedia.postView.post.url?.isEmpty ?? false)
+          ? DecoratedBox(
+              decoration: BoxDecoration(
+                color: indicateRead && postViewMedia.postView.read ? theme.colorScheme.onBackground.withOpacity(darkTheme ? 0.05 : 0.075) : null,
               ),
               child: ScalableText(
                 HtmlUnescape().convert(postViewMedia.postView.post.name),
